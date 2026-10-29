@@ -1,0 +1,19 @@
+[Unit]
+Description=OmenSuperHub daemon (HP OMEN / Victus fan, power and lighting control)
+Documentation=https://github.com/breadeding/OmenSuperHub
+After=systemd-modules-load.service
+
+[Service]
+Type=simple
+ExecStartPre=-/sbin/modprobe acpi_call
+ExecStart=@BINDIR@/omenhubd
+Restart=on-failure
+RestartSec=3
+StateDirectory=omenhub
+RuntimeDirectory=omenhub
+RuntimeDirectoryMode=0755
+PrivateTmp=true
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

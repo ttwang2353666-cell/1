@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omensuperhub-linux"
+version = "1.0.0"
+description = "OmenSuperHub for Linux: fan, power and lighting control for HP OMEN / Victus laptops"
+readme = "README.md"
+license = { text = "GPL-3.0-only" }
+requires-python = ">=3.8"
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Hardware",
+]
+
+[project.optional-dependencies]
+gui = ["PyQt6"]
+test = ["pytest"]
+
+[project.scripts]
+omenhubd = "omenhub.daemon:main"
+omenhub = "omenhub.cli:main"
+
+[project.gui-scripts]
+omenhub-gui = "omenhub.gui:main"
+
+[tool.setuptools]
+packages = ["omenhub", "omenhub.gui"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
