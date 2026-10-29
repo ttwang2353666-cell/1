@@ -91,6 +91,11 @@ The script:
 3. creates the `omenhub` group and adds the current user to it (takes effect after logging in again);
 4. installs the application menu entry and icon, and checks for acpi_call and Qt.
 
+> [!TIP]
+> You can also give [docs/AI_INSTALL_PROMPT.md](docs/AI_INSTALL_PROMPT.md) (in Chinese) to an AI assistant that can run
+> commands, such as Claude Code. It checks the model, installs the dependencies, and does the first start and the
+> verification with a conservative configuration that only takes over the fans.
+
 ### Installing acpi_call
 
 | Distribution | Command |
@@ -166,10 +171,13 @@ See `omenhub --help` and `omenhub <command> --help` for everything; add `--json`
 
 - Fan curve files use the Windows format (`Fan_Table_CPU_Temperature_List=…`, the old CSV format is accepted too), so you can
   copy your Windows txt files over or import them with “Load” in the curve editor.
-- Parameters the Windows version reads from HP's platform database are detected automatically on Linux and can be overridden
-  in the `platform` section of `config.json`, for example `max_fan_rpm`, `pl1_performance` / `pl1_default` (CPU power used by
-  the presets), `iccmax_support` (show the IccMax option), `clean_creek_level` / `clean_creek_seconds` (dust removal speed and
-  duration) and `backend` (`auto` / `acpi_call` / `hp-wmi`). Run `sudo systemctl restart omenhubd` afterwards.
+- The Windows version reads per-model parameters from HP's platform database, which is not available on Linux. Set them in
+  the `platform` section of `config.json` and run `sudo systemctl restart omenhubd`:
+  - `pl1_performance` / `pl1_default`: CPU power used by the presets. They cannot be detected and default to the original's
+    fallback values of 160 W / 55 W. Like the original, the first start applies the Extreme Performance preset, which sets
+    CPU PL1/PL2 to `pl1_performance`, so adjust it for your model
+  - `max_fan_rpm` (read from the BIOS fan table by default), `iccmax_support` (show the IccMax option),
+    `clean_creek_level` / `clean_creek_seconds` (dust removal speed and duration), `backend` (`auto` / `acpi_call` / `hp-wmi`)
 
 ## Permissions
 

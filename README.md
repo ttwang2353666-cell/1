@@ -80,6 +80,9 @@ sudo ./install.sh
 3. 创建 `omenhub` 用户组并把当前用户加入其中（重新登录后生效）；
 4. 安装应用菜单项与图标，检查 acpi_call 与 Qt 是否可用并给出提示。
 
+> [!TIP]
+> 也可以把 [docs/AI_INSTALL_PROMPT.md](docs/AI_INSTALL_PROMPT.md) 交给能执行命令的 AI 助手（如 Claude Code），让它检查机型、安装依赖，并以只接管风扇的保守配置完成首次启动和验证。
+
 ### 安装 acpi_call
 
 | 发行版 | 命令 |
@@ -149,7 +152,9 @@ omenhub omen-key preset --presets extreme,gpu,light
 | `~/.config/omenhub/custom.png` | 自定义托盘图标 |
 
 - 风扇曲线文件与 Windows 版格式相同（`Fan_Table_CPU_Temperature_List=…`，也兼容旧的 CSV 格式），可以把 Windows 下的 txt 文件直接复制过来，或用曲线编辑器的“加载”导入。
-- Windows 版从 HP 平台数据库读取的参数，Linux 版会自动探测，也可以在 `config.json` 的 `platform` 中手动填写，例如：`max_fan_rpm`（最高转速）、`pl1_performance` / `pl1_default`（预设使用的 CPU 功率）、`iccmax_support`（显示 IccMax 选项）、`clean_creek_level` / `clean_creek_seconds`（反转除尘转速与时长）、`backend`（`auto` / `acpi_call` / `hp-wmi`）。修改后执行 `sudo systemctl restart omenhubd`。
+- Windows 版从 HP 平台数据库读取各机型的参数，Linux 下读不到，可以在 `config.json` 的 `platform` 中手动填写，修改后执行 `sudo systemctl restart omenhubd`：
+  - `pl1_performance` / `pl1_default`：预设使用的 CPU 功率。无法自动探测，默认使用与原版相同的后备值 160W / 55W。首次启动时会像原版一样应用“极致性能”预设，把 CPU PL1/PL2 设为 `pl1_performance`，建议按机型调整
+  - `max_fan_rpm`（最高转速，默认读取 BIOS 风扇表）、`iccmax_support`（显示 IccMax 选项）、`clean_creek_level` / `clean_creek_seconds`（反转除尘转速与时长）、`backend`（`auto` / `acpi_call` / `hp-wmi`）
 
 ## 权限
 
