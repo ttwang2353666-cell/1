@@ -15,6 +15,8 @@ import logging
 import os
 import threading
 
+from .undervolt import valid_offset
+
 log = logging.getLogger(__name__)
 
 BUILTIN_PRESETS = ("extreme", "gpu", "light")
@@ -71,6 +73,7 @@ SETTINGS_DEFAULTS = {
     "kb_protocol": "basic",       # basic / dojo
     "lb_protocol": "dojo",
     "light_anim": {"effect": 2, "speed": 1, "direction": 0, "theme": 0},
+    "undervolt": None,            # CPU 降压：None 不设置 / 负整数 mV（核心与缓存相同）
 }
 
 PLATFORM_DEFAULTS = {
@@ -127,6 +130,8 @@ def _coerce_value(key: str, value, default):
             return default
     if isinstance(default, bool):
         return value if isinstance(value, bool) else default
+    if key == "undervolt":
+        return value if valid_offset(value) else None
     if key in ("cpu_power", "tpp", "iccmax", "ac_loadline", "gpu_core_oc", "gpu_mem_oc"):
         if value is None:
             return None

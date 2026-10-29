@@ -40,6 +40,7 @@ ZH_CN = """
 <p>(6) 修改CPU功率会同时修改PL1与PL2；“不设置”表示不修改 BIOS 当前值；</p>
 <p>(7) GPU频率限制通过 nvidia-smi 锁定最高频率，不是超频；GPU核心/显存超频通过 NVML 设置，需要较新的驱动；</p>
 <p>(8) Windows 版的“DB解锁”、“最大帧率”、“热切换”、“重启显卡”与单键RGB依赖 Windows 驱动接口，未移植；单键 RGB 键盘可使用 OpenRGB。</p>
+<p>(9) CPU降压：与 ThrottleStop 相同，通过 MSR 0x150 同时调整核心与缓存的电压偏移。仅支持 Intel，并且需要 BIOS 没有锁定降压、内核没有开启 lockdown（开启安全启动时通常会开启）。“不设置”恢复本次开机时的原始值；降压只在后台服务运行期间生效。如果应用降压后系统没有正常关机，下次开机会暂停自动降压，确认稳定后重新选择数值即可。降压过度会导致死机，请从小幅度开始逐步加大，并做稳定性测试。</p>
 <h2>四. “硬件监控”菜单说明</h2>
 <p>(1) 可开启或关闭对应的监控信息。混合模式下独显休眠时显示“节能”，此时不会读取数据，避免把独显唤醒；独显空闲时也会暂停读取，让它有机会进入节能状态。</p>
 <h2>五. “浮窗显示”菜单说明</h2>
@@ -84,6 +85,7 @@ ZH_TW = """
 <p>(6) 修改CPU功率會同時修改PL1與PL2；「不設定」表示不修改 BIOS 目前值；</p>
 <p>(7) GPU頻率限制透過 nvidia-smi 鎖定最高頻率，不是超頻；GPU核心/顯存超頻透過 NVML 設定，需要較新的驅動；</p>
 <p>(8) Windows 版的「DB解鎖」、「最大幀率」、「熱切換」、「重啟顯示卡」與單鍵RGB依賴 Windows 驅動介面，未移植；單鍵 RGB 鍵盤可使用 OpenRGB。</p>
+<p>(9) CPU降壓：與 ThrottleStop 相同，透過 MSR 0x150 同時調整核心與快取的電壓偏移。僅支援 Intel，並且需要 BIOS 沒有鎖定降壓、核心沒有開啟 lockdown（開啟安全開機時通常會開啟）。「不設定」恢復本次開機時的原始值；降壓只在後台服務執行期間生效。如果套用降壓後系統沒有正常關機，下次開機會暫停自動降壓，確認穩定後重新選擇數值即可。降壓過度會導致當機，請從小幅度開始逐步加大，並做穩定性測試。</p>
 <h2>四. 「硬體監控」選單說明</h2>
 <p>(1) 可開啟或關閉對應的監控資訊。混合模式下獨顯休眠時顯示「節能」，此時不會讀取資料，避免把獨顯喚醒；獨顯閒置時也會暫停讀取，讓它有機會進入節能狀態。</p>
 <h2>五. 「浮窗顯示」選單說明</h2>
@@ -128,6 +130,7 @@ and this tray app plus the <code>omenhub</code> command line tool. Quitting the 
 <p>(6) CPU power sets both PL1 and PL2; “Not Set” leaves the BIOS value untouched;</p>
 <p>(7) GPU clock limit locks the maximum clock with nvidia-smi (not overclocking); core/memory overclock uses NVML and needs a recent driver;</p>
 <p>(8) DB unlock, max frame rate, hot switch, GPU restart and per-key RGB depend on Windows driver interfaces and were not ported; use OpenRGB for per-key keyboards.</p>
+<p>(9) CPU Undervolt sets the core and cache voltage offset through MSR 0x150, the same interface ThrottleStop uses. It needs an Intel CPU, a BIOS that does not lock undervolting, and a kernel that is not in lockdown mode (usually enabled together with Secure Boot). “Not Set” restores the value the CPU had at boot, and the undervolt is only active while the daemon runs. If the system does not shut down cleanly while undervolted, the undervolt is paused at the next boot until you select a value again. Too much undervolt freezes the system: start small, increase gradually and run a stability test.</p>
 <h2>4. HW Monitor menu</h2>
 <p>(1) Enable or disable each item. In hybrid mode a sleeping dGPU is shown as “PoweredOff” and is not touched so it stays asleep; polling also pauses while the dGPU is idle.</p>
 <h2>5. Overlay menu</h2>

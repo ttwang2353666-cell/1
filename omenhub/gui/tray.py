@@ -7,7 +7,8 @@ Linux 托盘菜单多通过 DBus（StatusNotifierItem）导出，不能嵌入滑
 import textwrap
 import unicodedata
 
-from ..display import kb_type_name, preset_name, sensor_temperature, thermal_mode_name, validation_name
+from ..display import (kb_type_name, offset_text, preset_name, sensor_temperature, thermal_mode_name,
+                       validation_name)
 from ..hardware import GFX_DISCRETE, GFX_HYBRID, GFX_MODE_NAMES, GFX_OPTIMUS, GFX_SUPPORT_BITS, GFX_UMA
 from ..i18n import LANGUAGES, tr
 from .qt import QAction, QActionGroup, QtWidgets
@@ -21,6 +22,7 @@ CPU_POWER_VALUES = (25, 35, 45, 55, 65, 80, 95, 110, 125, 140, 160, 180, 200, 25
 TPP_VALUES = (40, 60, 80, 100, 120, 140, 160, 180, 200, 254)
 CORE_OC_VALUES = (0, 30, 60, 90, 120, 150, 180, 210, 240, 270)
 MEM_OC_VALUES = (0, 200, 400, 600, 800, 1000, 1200, 1400, 1600)
+UNDERVOLT_VALUES = (-25, -50, -75, -100, -125, -150)
 NOTE_WIDTH = 56  # 提示文字每行的显示宽度（中文字符计 2）
 
 
@@ -290,6 +292,47 @@ class TrayMenu:
                     lambda: self.f.get(key) is not None and self.f.get(key) not in values, group)
         return menu
 
+    def _build_undervolt(self, parent) -> None:
+        c, caps = self.c, self.caps
+        if not caps.get("undervolt") and caps.get("undervolt_reason") != "lockdown":
+            return
+        menu = self._sub(parent, tr("undervolt_menu"))
+        if not caps.get("undervolt"):
+            self._note(menu, tr("undervolt_reason_lockdown"))
+            return
+
+        def payload():
+            return c.state.get("undervolt") or {}
+
+        def offsets_text(key, values):
+            return tr(key, core=offset_text(values.get("core")), cache=offset_text(values.get("cache")))
+
+        self._note(menu, tr("undervolt_tip"))
+        for key, predicate in (("undervolt_suspended", lambda: payload().get("suspended")),
+                               ("undervolt_rejected", lambda: payload().get("error") == "rejected")):
+            for line in wrap_note(tr(key)):
+                self._visible.append((self._action(menu, line, enabled=False), predicate))
+        current = self._action(menu, "", enabled=False)
+        self._texts.append((current, lambda: offsets_text("undervolt_current", payload()["current"])
+                            if payload().get("current") else tr("undervolt_unknown")))
+        boot = self._action(menu, "", enabled=False)
+        self._texts.append((boot, lambda: offsets_text("undervolt_baseline", payload().get("baseline") or {})))
+        self._visible.append((boot, lambda: bool(payload().get("baseline"))))
+        self._action(menu, tr("undervolt_read"), c.read_undervolt)
+        menu.addSeparator()
+        group = self._group(menu)
+        self._check(menu, tr("undervolt_not_set"), lambda: c.set_setting("undervolt", None),
+                    lambda: self.s.get("undervolt") is None, group)
+        for value in UNDERVOLT_VALUES:
+            self._check(menu, f"{value} mV", lambda v=value: c.set_setting("undervolt", v),
+                        lambda v=value: self.s.get("undervolt") == v, group)
+        def is_custom():
+            return self.s.get("undervolt") is not None and self.s.get("undervolt") not in UNDERVOLT_VALUES
+
+        custom = self._check(menu, tr("custom_value"), c.ask_undervolt, is_custom, group)
+        self._texts.append((custom, lambda: f"{tr('custom_value')} ({self.s['undervolt']} mV)" if is_custom()
+                            else tr("custom_value")))
+
     def _build_performance(self) -> None:
         c, caps = self.c, self.caps
         menu = self._sub(self.menu, tr("perf_control"))
@@ -331,6 +374,7 @@ class TrayMenu:
             for level in range(1, levels + 1):
                 self._check(loadline, str(180 - 10 * level), lambda v=level: c.set_field("ac_loadline", v),
                             lambda v=level: self.f.get("ac_loadline") == v, group)
+        self._build_undervolt(menu)
         if caps.get("cpu_power_control"):
             self._value_menu(menu, tr("cpu_power_menu"), "cpu_power", CPU_POWER_VALUES, "W", 10, 254, 1,
                              tr("perf_cpu_power_tip"), max_label=tr("maximum"))

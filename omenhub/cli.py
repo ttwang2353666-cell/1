@@ -7,11 +7,13 @@ import time
 
 from . import __version__, paths
 from .config import PRESET_ORDER, normalize_preset
-from .display import kb_type_name, monitor_lines, preset_name, thermal_mode_name, validation_name
+from .display import (kb_type_name, monitor_lines, offset_text, preset_name, thermal_mode_name, undervolt_lines,
+                      validation_name)
 from .fancurve import FAN_TABLES, FanCurveProfile, InvalidFanCurve
 from .hardware import GFX_MODE_NAMES
 from .i18n import detect_system_language, set_language, tr
 from .ipc import Client, IpcError
+from .undervolt import MIN_OFFSET
 
 GFX_ALIASES = {"hybrid": 0, "discrete": 1, "optimus": 2, "advanced-optimus": 2, "uma": 3}
 ON_OFF = {"on": True, "off": False, "true": True, "false": False, "1": True, "0": False,
@@ -145,6 +147,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("ampere", type=_optional_int)
     p = sub.add_parser("loadline", help="AC load line level, or none")
     p.add_argument("level", type=_optional_int)
+    p = sub.add_parser("undervolt", help="CPU core/cache voltage offset (Intel), like ThrottleStop")
+    p.add_argument("mv", nargs="?", help=f"offset in mV from {MIN_OFFSET} to 0, or none to restore the boot value")
+    p.add_argument("--read", action="store_true", help="read the current offsets from the CPU")
     p = sub.add_parser("gfx", help="graphics (MUX) mode, needs reboot")
     p.add_argument("mode", nargs="?", choices=tuple(GFX_ALIASES))
 
@@ -263,6 +268,8 @@ def run(args, client: Client):
         set_value("iccmax", args.ampere)
     elif cmd == "loadline":
         set_value("ac_loadline", args.level)
+    elif cmd == "undervolt":
+        return run_undervolt(args, client, set_value)
     elif cmd == "gfx":
         if args.mode:
             result = client.request("gfx_mode_set", mode=GFX_ALIASES[args.mode])
@@ -348,6 +355,31 @@ def run_gpu(args, client: Client, set_value):
         print(client.request("nvidia_powerd", enable=args.state)["nvidia_powerd"])
     else:
         raise SystemExit("usage: omenhub gpu {tgp,ppab,dstate,core-oc,mem-oc,clock,processes,kill,powerd} ...")
+    return None
+
+
+def run_undervolt(args, client: Client, set_value):
+    if args.mv is not None:
+        text = args.mv.strip().lower()
+        if text in ("none", "off", "unset", "default"):
+            value = None
+        else:
+            try:
+                value = int(text.replace("mv", ""))
+            except ValueError:
+                raise SystemExit(f"invalid offset {args.mv!r}: expected {MIN_OFFSET}..0 or none") from None
+        set_value("undervolt", value)
+    if args.read:
+        client.request("undervolt_read")
+    state = client.request("get_state")
+    payload = state["undervolt"]
+    if args.json:
+        return payload
+    configured = state["settings"].get("undervolt")
+    if payload.get("supported"):
+        print(tr("undervolt_setting", value=tr("not_set") if configured is None else offset_text(configured)))
+    for line in undervolt_lines(payload):
+        print(line)
     return None
 
 

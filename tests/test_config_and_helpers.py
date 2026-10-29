@@ -131,3 +131,22 @@ def test_detect_system_language(monkeypatch, env, expected):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setenv("LANG", env)
     assert i18n.detect_system_language() == expected
+
+
+def test_undervolt_lines():
+    i18n.set_language("en")
+    assert display.undervolt_lines({"supported": False, "reason": "lockdown"}) == [i18n.tr("undervolt_reason_lockdown")]
+    payload = {"supported": True, "current": {"core": -110.35, "cache": -110.35},
+               "baseline": {"core": 0.0, "cache": 0.0}, "suspended": True, "error": None}
+    assert display.undervolt_lines(payload) == [i18n.tr("undervolt_suspended"), "Current: core -110 mV, cache -110 mV",
+                                                "At boot: core 0 mV, cache 0 mV"]
+    assert display.undervolt_lines({"supported": True, "error": "rejected"}) == [i18n.tr("undervolt_rejected"),
+                                                                                "Current offsets not read yet"]
+    i18n.set_language("zh-CN")
+
+
+def test_config_coerces_undervolt(tmp_path):
+    path = tmp_path / "config.json"
+    for stored, expected in ((-80, -80), (-500, None), (20, None), ("-80", None), (None, None)):
+        path.write_text(json.dumps({"settings": {"undervolt": stored}}))
+        assert Config(str(path)).load().settings["undervolt"] == expected

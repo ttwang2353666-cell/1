@@ -31,6 +31,33 @@ def validation_name(validation: str) -> str:
     return tr(f"validation_{validation}") if validation else tr("unknown")
 
 
+def offset_text(value) -> str:
+    """电压偏移显示为整数 mV（编码单位是 1/1.024 mV）。"""
+    return "--" if value is None else f"{round(value)} mV"
+
+
+def undervolt_lines(payload: dict):
+    """CPU 降压的状态说明，托盘菜单、控制面板与命令行共用。"""
+    if not payload.get("supported"):
+        reason = payload.get("reason")
+        return [tr(f"undervolt_reason_{reason}") if reason else tr("unknown")]
+    lines = []
+    if payload.get("suspended"):
+        lines.append(tr("undervolt_suspended"))
+    if payload.get("error") == "rejected":
+        lines.append(tr("undervolt_rejected"))
+    current, baseline = payload.get("current"), payload.get("baseline")
+    if current:
+        lines.append(tr("undervolt_current", core=offset_text(current.get("core")),
+                        cache=offset_text(current.get("cache"))))
+    else:
+        lines.append(tr("undervolt_unknown"))
+    if baseline:
+        lines.append(tr("undervolt_baseline", core=offset_text(baseline.get("core")),
+                        cache=offset_text(baseline.get("cache"))))
+    return lines
+
+
 def thermal_mode_name(mode: str) -> str:
     return tr(f"mode_{mode}")
 

@@ -26,6 +26,7 @@
 | 反转除尘（Clean Creek） | ✅ | 需要 BIOS 支持 |
 | BIOS 性能模式 | ✅ | 新增“不接管”，可交给 power-profiles-daemon / TuneD 管理 |
 | CPU 功率（PL1+PL2）、PPab 条件（Tpp）、IccMax、AC Load Line | ✅ | IccMax 缺少 HP 平台数据库，默认隐藏 |
+| CPU 降压（Intel 核心与缓存电压偏移，即 ThrottleStop 的降压功能） | ✅ | Linux 版新增。需要 BIOS 没有锁定降压、内核没有开启 lockdown；异常关机后自动暂停 |
 | 显卡 CTGP / PPAB / D 状态 | ✅ | |
 | 图形模式（独显直连 MUX：混合 / 独显 / Optimus / 集显） | ✅ | 需要重启 |
 | GPU 核心 / 显存超频、频率限制 | ✅ | NVIDIA：NVML / nvidia-smi |
@@ -47,8 +48,9 @@
 flowchart TB
     gui["omenhub-gui<br/>托盘 / 控制面板 / 浮窗"] -->|"/run/omenhub/omenhub.sock"| d
     cli["omenhub<br/>命令行"] -->|"JSON 消息，按用户组鉴权"| d
-    d["omenhubd（root，systemd 服务）<br/>预设 · 风扇曲线 · 功率 · 灯光 · 监控 · Omen 键 · BIOS 心跳"]
+    d["omenhubd（root，systemd 服务）<br/>预设 · 风扇曲线 · 功率 · 灯光 · 监控 · Omen 键 · BIOS 心跳 · 降压"]
     d -->|"acpi_call"| bios["HP BIOS 的 WMI 方法"]
+    d -->|"/dev/cpu/0/msr"| msr["CPU 超频邮箱 MSR 0x150<br/>（降压）"]
     d -.->|"降级"| hpwmi["内核 hp-wmi 驱动<br/>platform_profile / hwmon"]
 ```
 
@@ -134,6 +136,7 @@ omenhub curve export custom > my.txt
 omenhub curve import custom my.txt --apply
 omenhub thermal unleash        # BIOS 性能模式；system 表示交给系统管理
 omenhub cpu-power 90           # CPU 功率（PL1+PL2），none 表示不设置
+omenhub undervolt -80          # CPU 降压 80mV（核心与缓存）；none 恢复开机时的值，--read 读取当前偏移
 omenhub gpu tgp on             # 显卡 CTGP；另有 ppab、dstate、core-oc、mem-oc、clock 等
 omenhub gfx                    # 查看图形模式；omenhub gfx hybrid 切换（需重启）
 omenhub light color ff0000     # 键盘颜色；--zone 1~4 指定分区，--lightbar 控制灯条
@@ -187,6 +190,16 @@ Wayland 不允许程序自行定位窗口和置顶，托盘程序会自动通过
 
 Omen 键由内核 hp-wmi 驱动上报为 `XF86Launch2`（KEY_PROG2）。“默认”时 OSH 不处理，可以在桌面环境的快捷键设置中自行绑定；选择其他动作后由后台服务处理。
 
+### CPU 降压（ThrottleStop 的降压功能）怎么用
+
+在托盘菜单“性能控制 → CPU降压”、控制面板的“性能”页，或用 `omenhub undervolt` 设置。核心与缓存使用相同的偏移（12 代起两者共用电压）。
+
+- **前提**：Intel 处理器；内核没有开启 lockdown（`cat /sys/kernel/security/lockdown` 显示 `[none]`，开启安全启动时通常是 integrity）；BIOS 没有锁定降压。可以先用 `omenhub undervolt -10` 测试，提示“CPU 拒绝了电压偏移”就说明被 BIOS 锁定了，Windows 下的 ThrottleStop 同样无法降压。
+- **安全机制**：没有设置降压时程序不会访问 MSR；“不设置”恢复本次开机时 CPU 上原有的值（BIOS 或其他工具可能已经设置过偏移）；降压只在后台服务运行期间生效，停止服务时恢复原值；如果应用降压后系统没有正常关机（死机、强制关机），下次开机会暂停自动降压，在菜单中重新选择数值才会恢复。
+- **稳定性测试**：降压过度会导致死机或程序出错。建议从 -50mV 开始，每次加大 10~20mV，并运行压力测试（例如 `stress-ng --cpu 0 --timeout 10m`），找到稳定值后再回退一些作为余量。
+- 内核日志里会出现 “Write to unrecognized MSR 0x150” 警告，这是内核对写入 MSR 的正常提示；可在内核参数中加入 `msr.allow_writes=on` 关闭。
+- 不要同时使用 intel-undervolt、throttled 等其他降压工具，它们会互相覆盖设置。
+
 ### 查看日志与反馈问题
 
 ```bash
@@ -221,6 +234,7 @@ python3 -m pytest
 | `omenhub/fancurve.py` | 风扇曲线文件与插值 | `FanCurveProfile.cs` |
 | `omenhub/sensors.py`、`omenhub/nvidia.py` | 传感器、NVIDIA 控制 | LibreHardwareMonitor、NVAPI |
 | `omenhub/gui/` | 托盘菜单、控制面板、曲线编辑器、浮窗、帮助 | `Program.Menu.cs`、`FanCurveForm.cs`、`FloatingForm.cs`、`HelpForm.cs` |
+| `omenhub/undervolt.py` | CPU 降压：MSR 0x150 超频邮箱 | 原版没有，对应 ThrottleStop 的 FIVR 降压 |
 | `omenhub/cli.py` | 命令行工具 | —— |
 
 ## 致谢

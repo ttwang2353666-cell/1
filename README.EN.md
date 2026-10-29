@@ -31,6 +31,7 @@ Like the original it talks to the hardware directly through HP's BIOS WMI interf
 | Reverse dust removal (Clean Creek) | ✅ | Needs BIOS support |
 | BIOS thermal mode | ✅ | Adds “Leave to system” to let power-profiles-daemon / TuneD manage it |
 | CPU power (PL1+PL2), PPab condition (Tpp), IccMax, AC Load Line | ✅ | IccMax is hidden by default because HP's platform database is not available |
+| CPU undervolt (Intel core and cache voltage offset, ThrottleStop's undervolting) | ✅ | New in the Linux version. Needs a BIOS that does not lock undervolting and a kernel without lockdown; paused automatically after an unclean shutdown |
 | GPU CTGP / PPAB / D-state | ✅ | |
 | Graphics (MUX) mode: Hybrid / Discrete / Optimus / UMA | ✅ | Reboot required |
 | GPU core / memory overclock, clock limit | ✅ | NVIDIA: NVML / nvidia-smi |
@@ -52,8 +53,9 @@ Like the original it talks to the hardware directly through HP's BIOS WMI interf
 flowchart TB
     gui["omenhub-gui<br/>tray / control panel / overlay"] -->|"/run/omenhub/omenhub.sock"| d
     cli["omenhub<br/>command line"] -->|"JSON messages, group-based authorization"| d
-    d["omenhubd (root, systemd service)<br/>presets · fan curves · power · lighting · monitoring · Omen key · BIOS heartbeat"]
+    d["omenhubd (root, systemd service)<br/>presets · fan curves · power · lighting · monitoring · Omen key · BIOS heartbeat · undervolt"]
     d -->|"acpi_call"| bios["HP BIOS WMI method"]
+    d -->|"/dev/cpu/0/msr"| msr["CPU overclocking mailbox MSR 0x150<br/>(undervolt)"]
     d -.->|"fallback"| hpwmi["kernel hp-wmi driver<br/>platform_profile / hwmon"]
 ```
 
@@ -152,6 +154,7 @@ omenhub curve export custom > my.txt
 omenhub curve import custom my.txt --apply
 omenhub thermal unleash        # BIOS thermal mode; system leaves it to the OS
 omenhub cpu-power 90           # CPU power (PL1+PL2); none leaves it unset
+omenhub undervolt -80          # undervolt core and cache by 80 mV; none restores the boot value, --read reads the offsets
 omenhub gpu tgp on             # GPU CTGP; also ppab, dstate, core-oc, mem-oc, clock, ...
 omenhub gfx                    # show the graphics mode; omenhub gfx hybrid switches (reboot required)
 omenhub light color ff0000     # keyboard color; --zone 1-4 selects a zone, --lightbar targets the light bar
@@ -219,6 +222,25 @@ sleep. Overclocking and the clock limit are re-applied automatically when it wak
 The kernel hp-wmi driver reports the Omen key as `XF86Launch2` (KEY_PROG2). With “Default” OSH ignores it and you can bind
 it in your desktop's keyboard settings; any other action is handled by the daemon.
 
+### How do I undervolt (ThrottleStop's undervolting)?
+
+Use Performance → CPU Undervolt in the tray, the Performance tab of the control panel, or `omenhub undervolt`. The core
+and cache get the same offset (they share one voltage since the 12th generation).
+
+- **Requirements**: an Intel CPU; a kernel without lockdown (`cat /sys/kernel/security/lockdown` shows `[none]`; it is
+  usually integrity when Secure Boot is on); a BIOS that does not lock undervolting. Try `omenhub undervolt -10` first: if it
+  reports that the CPU rejected the offset, the BIOS locks it and ThrottleStop on Windows cannot undervolt either.
+- **Safety**: without an undervolt setting the program never touches the MSR. “Not Set” restores the offset the CPU had at
+  boot (the BIOS or another tool may have set one). The undervolt is only active while the daemon runs and is restored when
+  it stops. If the system does not shut down cleanly while undervolted (freeze, forced power-off), the undervolt is paused
+  at the next boot until you select a value again.
+- **Stability testing**: too much undervolt freezes the system or makes programs fail. Start at -50 mV, go 10–20 mV further
+  each step and run a stress test (for example `stress-ng --cpu 0 --timeout 10m`); once you find the limit, back off a
+  little for margin.
+- The kernel log shows a “Write to unrecognized MSR 0x150” warning; that is the kernel's normal notice for MSR writes and
+  can be turned off with the `msr.allow_writes=on` kernel parameter.
+- Do not run other undervolting tools such as intel-undervolt or throttled at the same time; they overwrite each other.
+
 ### Logs and bug reports
 
 ```bash
@@ -253,6 +275,7 @@ Code layout:
 | `omenhub/fancurve.py` | Fan curve files and interpolation | `FanCurveProfile.cs` |
 | `omenhub/sensors.py`, `omenhub/nvidia.py` | Sensors, NVIDIA control | LibreHardwareMonitor, NVAPI |
 | `omenhub/gui/` | Tray menu, control panel, curve editor, overlay, help | `Program.Menu.cs`, `FanCurveForm.cs`, `FloatingForm.cs`, `HelpForm.cs` |
+| `omenhub/undervolt.py` | CPU undervolt: MSR 0x150 overclocking mailbox | Not in the original; ThrottleStop's FIVR undervolting |
 | `omenhub/cli.py` | Command line tool | — |
 
 ## Credits

@@ -12,6 +12,7 @@ from .. import __version__, paths
 from ..display import monitor_lines, preset_name, tray_text
 from ..hardware import GFX_MODE_NAMES, GFX_UMA
 from ..i18n import current_language, detect_system_language, set_language, tr
+from ..undervolt import MIN_OFFSET
 from . import dialogs
 from .client import DaemonClient
 from .icons import app_icon, custom_icon, temperature_icon
@@ -23,7 +24,8 @@ from .tray import TrayMenu
 log = logging.getLogger(__name__)
 
 ERROR_TEXT = {"denied": "daemon_denied", "auto_fan_needs_monitor": "monitor_auto_fan_warning",
-              "offline": "daemon_offline"}
+              "offline": "daemon_offline", "undervolt_rejected": "undervolt_rejected",
+              "undervolt_msr_unavailable": "undervolt_msr_unavailable"}
 
 
 class Controller(QtCore.QObject):
@@ -210,6 +212,18 @@ class Controller(QtCore.QObject):
             self.menu.refresh()
         else:
             self.set_field(key, value)
+
+    def ask_undervolt(self) -> None:
+        current = self.dsettings.get("undervolt")
+        value = dialogs.ask_int(None, tr("undervolt_menu"), MIN_OFFSET, 0,
+                                current if isinstance(current, int) else -50, 5)
+        if value is None:
+            self.menu.refresh()
+        else:
+            self.set_setting("undervolt", value)
+
+    def read_undervolt(self) -> None:
+        self.client.call("undervolt_read")
 
     # ---------------------------------------------------------------- 预设
     def apply_preset(self, preset: str) -> None:

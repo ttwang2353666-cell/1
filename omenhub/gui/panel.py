@@ -2,9 +2,11 @@
 
 from contextlib import contextmanager
 
-from ..display import kb_type_name, preset_name, sensor_temperature, thermal_mode_name, validation_name
+from ..display import (kb_type_name, offset_text, preset_name, sensor_temperature, thermal_mode_name,
+                       undervolt_lines, validation_name)
 from ..hardware import GFX_DISCRETE, GFX_HYBRID, GFX_MODE_NAMES, GFX_OPTIMUS, GFX_SUPPORT_BITS, GFX_UMA
 from ..i18n import LANGUAGES, tr
+from ..undervolt import MIN_OFFSET
 from .icons import app_icon
 from .overlay import ordered_screens
 from .qt import Qt, QtCore, QtGui, QtWidgets, Signal
@@ -412,6 +414,9 @@ class ControlPanel(QtWidgets.QMainWindow):
                 form.addRow(tr("ac_loadline_menu"), loadline)
                 self._sync(lambda: _select(loadline, self.f.get("ac_loadline")))
 
+        if caps.get("undervolt") or caps.get("undervolt_reason") == "lockdown":
+            self._undervolt(layout)
+
         if caps.get("bios"):
             form = _form(layout, tr("gpu_power_control_menu"))
             tgp = QtWidgets.QCheckBox("Tgp")
@@ -511,6 +516,51 @@ class ControlPanel(QtWidgets.QMainWindow):
             form.addRow(processes)
             form.addRow(buttons)
             QtCore.QTimer.singleShot(800, load)
+
+    def _undervolt(self, layout) -> None:
+        c = self.c
+        form = _form(layout, tr("undervolt_menu"))
+        if not c.caps.get("undervolt"):
+            reason = QtWidgets.QLabel(tr("undervolt_reason_lockdown"))
+            reason.setWordWrap(True)
+            form.addRow(reason)
+            return
+        spin = QtWidgets.QSpinBox()
+        spin.setRange(MIN_OFFSET, 0)
+        spin.setSingleStep(5)
+        spin.setSuffix(" mV")
+        spin.setValue(-50)
+        apply_button = QtWidgets.QPushButton(tr("apply"))
+        unset_button = QtWidgets.QPushButton(tr("undervolt_not_set"))
+        read_button = QtWidgets.QPushButton(tr("undervolt_read"))
+        # 只在点击“应用”时写入，不随数值框的每次变化写入
+        apply_button.clicked.connect(lambda: c.set_setting("undervolt", spin.value()))
+        unset_button.clicked.connect(lambda: c.set_setting("undervolt", None))
+        read_button.clicked.connect(c.read_undervolt)
+        row = QtWidgets.QHBoxLayout()
+        for widget in (spin, apply_button, unset_button):
+            row.addWidget(widget)
+        row.addStretch(1)
+        form.addRow(tr("undervolt_offset"), row)
+        status = QtWidgets.QLabel()
+        status.setWordWrap(True)
+        form.addRow(status)
+        read_row = QtWidgets.QHBoxLayout()
+        read_row.addWidget(read_button)
+        read_row.addStretch(1)
+        form.addRow(read_row)
+        tip = QtWidgets.QLabel(tr("undervolt_tip"))
+        tip.setWordWrap(True)
+        form.addRow(tip)
+
+        def sync_undervolt():
+            value = self.s.get("undervolt")
+            if value is not None:
+                with blocked(spin):
+                    spin.setValue(value)
+            setting = tr("undervolt_setting", value=tr("not_set") if value is None else offset_text(value))
+            status.setText("\n".join([setting] + undervolt_lines(c.state.get("undervolt") or {})))
+        self._sync(sync_undervolt)
 
     # ---------------------------------------------------------------- 灯光
     def _lighting(self, layout) -> None:

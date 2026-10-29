@@ -77,6 +77,7 @@ OmenSuperHub for Linux 是惠普暗影精灵（OMEN）/ 光影精灵（Victus）
 - 切换显卡模式（omenhub gfx 加模式名）：需要重启，配置不当可能黑屏
 - 修改 CPU 功率、PPab、IccMax、Load Line 或 GPU 超频 / 频率限制（cpu-power、tpp、iccmax、loadline、gpu core-oc / mem-oc / clock）
 - 切换到内置预设（extreme、gpu、light）
+- 设置 CPU 降压（omenhub undervolt）
 - 修改 BIOS 设置、关闭安全启动、停用或卸载其他系统服务、重启或注销
 
 ## 最后给我一份总结
