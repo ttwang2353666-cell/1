@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """omenhubd：以 root 运行的后台服务。
 
 对应 Windows 版 Program.cs / Program.Config.cs 中与界面无关的全部控制逻辑：

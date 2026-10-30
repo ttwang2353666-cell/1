@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """BIOS 命令层：移植自 OmenHardware.cs 与 App/OmenLighting.cs。
 
 所有命令与 Windows 版保持一致（CommandType、数据布局、输出大小），只是底层

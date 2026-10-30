@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """Linux 传感器：替代 Windows 版的 LibreHardwareMonitor（及其 PawnIO 驱动）。
 
 CPU：hwmon(coretemp / k10temp / zenpower) 温度，RAPL powercap 封装功率，cpufreq 频率。

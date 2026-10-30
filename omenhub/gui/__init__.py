@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """OmenSuperHub for Linux 托盘程序（Qt）。"""
 
 import importlib

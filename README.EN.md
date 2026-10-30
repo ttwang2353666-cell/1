@@ -4,6 +4,11 @@
 
   **Third-party control center for HP OMEN / Victus laptops — Linux port**
 
+  [![CI](https://github.com/ttwang2353666-cell/1/actions/workflows/ci.yml/badge.svg)](https://github.com/ttwang2353666-cell/1/actions/workflows/ci.yml)
+  [![Release](https://img.shields.io/github/v/release/ttwang2353666-cell/1)](https://github.com/ttwang2353666-cell/1/releases)
+  [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
+  [![REUSE](https://img.shields.io/badge/REUSE-compliant-green)](https://reuse.software)
+
   [简体中文](README.md) | English
 </div>
 
@@ -84,6 +89,9 @@ git clone https://github.com/ttwang2353666-cell/1.git omensuperhub-linux
 cd omensuperhub-linux
 sudo ./install.sh
 ```
+
+You can also download the source archive from [Releases](https://github.com/ttwang2353666-cell/1/releases), extract it
+and run `sudo ./install.sh` in that directory.
 
 The script:
 
@@ -278,18 +286,42 @@ Code layout:
 | `omenhub/undervolt.py` | CPU undervolt: MSR 0x150 overclocking mailbox | Not in the original; ThrottleStop's FIVR undervolting |
 | `omenhub/cli.py` | Command line tool | — |
 
-## Credits
+## Contributing
 
-- [OmenSuperHub](https://github.com/breadeding/OmenSuperHub) by **@breadeding**: the original this project ports; the
-  feature design and BIOS commands all come from it
-- [OmenMon](https://github.com/OmenMon/OmenMon) and [OmenHwCtl](https://github.com/GeographicCone/OmenHwCtl) by
-  **@GeographicCone**: the main inspiration of the original
-- The Linux kernel [hp-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/hp/hp-wmi.c) driver and the
-  [acpi_call](https://github.com/nix-community/acpi_call) module
+Bug reports and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). Changes in each version are listed in
+[CHANGELOG.md](CHANGELOG.md).
+
+## Contributors and credits
+
+- Maintainer: [ttwang2353666-cell](https://github.com/ttwang2353666-cell)
+- Linux port: written by Claude, Anthropic's AI assistant, under the maintainer's direction
+- Original: [OmenSuperHub](https://github.com/breadeding/OmenSuperHub) by breaded ([@breadeding](https://github.com/breadeding));
+  the feature design and BIOS commands all come from it
+- Referenced projects: [OmenMon](https://github.com/OmenMon/OmenMon) and [OmenHwCtl](https://github.com/GeographicCone/OmenHwCtl)
+  (GeographicCone, the main inspiration of the original), the Linux kernel
+  [hp-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/hp/hp-wmi.c) and WMI drivers,
+  [acpi_call](https://github.com/nix-community/acpi_call) (Michal Kottman), ThrottleStop (Kevin Glynn),
+  [intel-undervolt](https://github.com/kitsunyan/intel-undervolt) (kitsunyan) and
+  [undervolt](https://github.com/georgewhewell/undervolt) (George Whewell)
+
+The full list, with what was taken from each project, is in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## License
 
-[GPL-3.0](LICENSE), the same as the original.
+This project is a modified version of [OmenSuperHub](https://github.com/breadeding/OmenSuperHub) (Copyright © breaded):
+it was ported to Linux and rewritten in Python in October 2026. Like the original, it is released under the
+[GNU General Public License version 3](LICENSE) (GPL-3.0-only).
+
+Copyright © 2026 OmenSuperHub for Linux contributors (see [CONTRIBUTORS.md](CONTRIBUTORS.md))
+
+> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+> License as published by the Free Software Foundation, version 3.
+>
+> This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+> warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Copyright and license information for every file is in its SPDX header (for Markdown and similar files, in
+[REUSE.toml](REUSE.toml)), following the [REUSE](https://reuse.software) specification.
 
 ## Disclaimer
 

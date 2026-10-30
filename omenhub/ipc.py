@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """守护进程与客户端之间的通信协议：Unix 套接字上的逐行 JSON。
 
 请求：{"id": 1, "cmd": "set", "args": {...}}

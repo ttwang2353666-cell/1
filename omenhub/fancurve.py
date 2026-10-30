@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """温度-转速曲线：移植自 FanCurveProfile.cs 与 Program.Config.cs 中的曲线逻辑。
 
 文件格式与 Windows 版完全相同（silent.txt / cool.txt / custom.txt），可直接复用：

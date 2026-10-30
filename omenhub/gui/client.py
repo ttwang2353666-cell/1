@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """图形界面与 omenhubd 的连接：订阅线程接收推送，请求线程执行命令，结果通过 Qt 信号回到界面线程。"""
 
 import itertools

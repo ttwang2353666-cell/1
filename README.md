@@ -4,6 +4,11 @@
 
   **惠普暗影精灵 / 光影精灵笔记本第三方控制台 —— Linux 移植版**
 
+  [![CI](https://github.com/ttwang2353666-cell/1/actions/workflows/ci.yml/badge.svg)](https://github.com/ttwang2353666-cell/1/actions/workflows/ci.yml)
+  [![Release](https://img.shields.io/github/v/release/ttwang2353666-cell/1)](https://github.com/ttwang2353666-cell/1/releases)
+  [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
+  [![REUSE](https://img.shields.io/badge/REUSE-compliant-green)](https://reuse.software)
+
   简体中文 | [English](README.EN.md)
 </div>
 
@@ -74,6 +79,8 @@ git clone https://github.com/ttwang2353666-cell/1.git omensuperhub-linux
 cd omensuperhub-linux
 sudo ./install.sh
 ```
+
+也可以从 [Releases](https://github.com/ttwang2353666-cell/1/releases) 下载源码包，解压后在目录中运行 `sudo ./install.sh`。
 
 安装脚本会：
 
@@ -237,15 +244,32 @@ python3 -m pytest
 | `omenhub/undervolt.py` | CPU 降压：MSR 0x150 超频邮箱 | 原版没有，对应 ThrottleStop 的 FIVR 降压 |
 | `omenhub/cli.py` | 命令行工具 | —— |
 
-## 致谢
+## 参与贡献
 
-- [OmenSuperHub](https://github.com/breadeding/OmenSuperHub)（**@breadeding**）：本项目移植的原版，功能设计与 BIOS 命令均来自它
-- [OmenMon](https://github.com/OmenMon/OmenMon)、[OmenHwCtl](https://github.com/GeographicCone/OmenHwCtl)（**@GeographicCone**）：原版的主要灵感来源
-- Linux 内核 [hp-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/hp/hp-wmi.c) 驱动与 [acpi_call](https://github.com/nix-community/acpi_call) 模块
+欢迎反馈问题和提交代码，见 [CONTRIBUTING.md](CONTRIBUTING.md)；各版本的变化见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 贡献者与致谢
+
+- 维护者：[ttwang2353666-cell](https://github.com/ttwang2353666-cell)
+- Linux 移植版：由 Claude（Anthropic 的 AI 助手）在维护者的指导下编写
+- 原版：[OmenSuperHub](https://github.com/breadeding/OmenSuperHub)，作者 breaded（[@breadeding](https://github.com/breadeding)），本项目的功能设计与 BIOS 命令均来自它
+- 参考的项目：[OmenMon](https://github.com/OmenMon/OmenMon) 与 [OmenHwCtl](https://github.com/GeographicCone/OmenHwCtl)（GeographicCone，原版的主要灵感来源）、Linux 内核 [hp-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/hp/hp-wmi.c) 与 WMI 驱动、[acpi_call](https://github.com/nix-community/acpi_call)（Michal Kottman）、ThrottleStop（Kevin Glynn）、[intel-undervolt](https://github.com/kitsunyan/intel-undervolt)（kitsunyan）与 [undervolt](https://github.com/georgewhewell/undervolt)（George Whewell）
+
+完整名单以及从各项目借鉴的内容见 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
 
 ## 许可证
 
-与原版相同，使用 [GPL-3.0](LICENSE) 许可证。
+本项目是 [OmenSuperHub](https://github.com/breadeding/OmenSuperHub)（Copyright © breaded）的修改版本：2026 年 10 月移植到 Linux 并用 Python 重写。与原版相同，以 [GNU 通用公共许可证第 3 版](LICENSE)（GPL-3.0-only）发布。
+
+Copyright © 2026 OmenSuperHub for Linux contributors（见 [CONTRIBUTORS.md](CONTRIBUTORS.md)）
+
+> This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+> License as published by the Free Software Foundation, version 3.
+>
+> This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+> warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+每个文件的版权与许可证信息写在文件头的 SPDX 标注中（Markdown 等文件见 [REUSE.toml](REUSE.toml)），符合 [REUSE](https://reuse.software) 规范。
 
 ## 免责声明
 

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """风扇曲线编辑器（FanCurveForm.cs）：左键空白处加点、拖动调整、右键删除，至少保留两个点。"""
 
 from ..fancurve import FanCurveProfile, InvalidFanCurve

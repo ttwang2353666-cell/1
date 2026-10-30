@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
+# 源码包包含安装脚本、打包文件、测试与文档，解压后即可运行 install.sh
+include LICENSE REUSE.toml README.md README.EN.md CHANGELOG.md CONTRIBUTING.md CONTRIBUTORS.md
+include install.sh uninstall.sh
+recursive-include LICENSES *.txt
+recursive-include packaging *
+recursive-include docs *.md
+recursive-include tests *.py

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """托盘图标与右键菜单（Program.Menu.cs）。
 
 Linux 托盘菜单多通过 DBus（StatusNotifierItem）导出，不能嵌入滑块控件，

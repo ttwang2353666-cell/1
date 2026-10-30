@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.8", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Pyflakes
+        run: uv run --no-project --python ${{ matrix.python }} --with pyflakes python -m pyflakes omenhub tests
+      - name: Pytest
+        run: uv run --no-project --python ${{ matrix.python }} --with pytest python -m pytest -q
+
+  lint:
+    name: Shell scripts, licensing and packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: ShellCheck
+        run: shellcheck install.sh uninstall.sh
+      - name: REUSE
+        run: uvx reuse lint
+      - name: Build
+        run: uv build

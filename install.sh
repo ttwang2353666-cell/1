@@ -9,6 +9,9 @@
 #   /etc/systemd/system/omenhubd.service   以 root 运行的守护进程
 #   /etc/modules-load.d/omenhub.conf       开机加载 acpi_call（仅当已安装该模块）
 #   $PREFIX/share/applications、icons      托盘程序的菜单项与图标
+#
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

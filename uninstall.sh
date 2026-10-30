@@ -5,6 +5,9 @@
 #
 # 默认保留 /var/lib/omenhub 中的配置与风扇曲线；--purge 同时删除它们和 omenhub 用户组。
 # 各用户的 ~/.config/omenhub 与自启动项需要用户自行删除。
+#
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

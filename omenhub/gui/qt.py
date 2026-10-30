@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """Qt 绑定兼容层：依次尝试 PyQt6、PySide6、PyQt5（代码统一使用完整的枚举名与 exec()）。"""
 
 import os

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """NVIDIA 相关功能（GpuAppManager.cs 的 Linux 版）。
 
   * nvidia-smi：型号、功率限制、温度墙、频率限制（--lock-gpu-clocks）

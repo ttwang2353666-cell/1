@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """omenhub 命令行：通过 omenhubd 查看状态、切换预设、调节风扇与功率等。"""
 
 import argparse

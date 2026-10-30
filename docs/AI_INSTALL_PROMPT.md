@@ -2,7 +2,7 @@
 
 OmenSuperHub for Linux 是惠普暗影精灵（OMEN）/ 光影精灵（Victus）游戏本的风扇、功率与灯光控制工具，从 Windows 版 OmenSuperHub 移植而来。它由三部分组成：以 root 运行的 systemd 服务 omenhubd、命令行工具 omenhub、Qt 托盘程序 omenhub-gui。
 
-- 代码：https://github.com/ttwang2353666-cell/1 （公开仓库）的 claude/eager-turing-xhg5nn 分支；如果这个分支已经不存在，说明已合并，改用默认分支
+- 代码：https://github.com/ttwang2353666-cell/1 （公开仓库）
 - 仓库里的 README.md 有完整说明，install.sh 负责安装
 - 这个移植版还没有在真机上验证过，请谨慎操作：每一步确认结果后再继续；出错时先停下来分析原因，不要修改项目源码来绕过问题
 
@@ -47,7 +47,7 @@ OmenSuperHub for Linux 是惠普暗影精灵（OMEN）/ 光影精灵（Victus）
 
 ## 第 3 步：获取代码并安装（先不启动服务）
 
-    git clone -b claude/eager-turing-xhg5nn https://github.com/ttwang2353666-cell/1.git ~/omensuperhub-linux
+    git clone https://github.com/ttwang2353666-cell/1.git ~/omensuperhub-linux
     cd ~/omensuperhub-linux
     sudo ./install.sh --no-start
 

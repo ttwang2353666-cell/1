@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """Omen 键（Program.OmenKey.cs 的 Linux 版）。
 
 Windows 版通过 WMI 事件订阅 hpqBEvnt(eventId=29, eventData=8613) 捕获 Omen 键；Linux 内核的

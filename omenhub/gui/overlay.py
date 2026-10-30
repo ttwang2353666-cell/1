@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """浮窗（FloatingForm.cs）：置顶、透明、鼠标穿透地在屏幕角落显示监控信息。"""
 
 from .qt import Qt, QtCore, QtGui, QtWidgets

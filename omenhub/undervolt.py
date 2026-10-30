@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """CPU 降压（ThrottleStop 的 FIVR 功能）：通过 Intel 超频邮箱 MSR 0x150 读写电压偏移。
 
 与 ThrottleStop、intel-undervolt 使用同一个接口。只调整核心（plane 0）与缓存（plane 2）：

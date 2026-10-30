@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-FileCopyrightText: breaded <https://github.com/breadeding/OmenSuperHub>
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Modified: ported from OmenSuperHub (C#, Windows) to Python for Linux, October 2026.
 """HP WMI BIOS 接口传输层。
 
 Windows 版 OSH 通过 WMI 类 ``root\\wmi:hpqBIntM`` 的 ``hpqBIOSInt{0,4,128,1024,4096}``

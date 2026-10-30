@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
 """运行时路径。均可通过环境变量覆盖，便于测试或打包。"""
 
 import os
