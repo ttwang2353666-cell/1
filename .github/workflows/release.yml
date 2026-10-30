@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
+# 推送 v* 标签时：检查版本号、运行测试、构建源码包与 wheel，用 CHANGELOG.md 中对应版本的内容创建 Release
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Check version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          grep -qx "version = \"$version\"" pyproject.toml
+          grep -qx "__version__ = \"$version\"" omenhub/__init__.py
+          grep -q "^## \[$version\]" CHANGELOG.md
+      - name: Test
+        run: uv run --no-project --python 3.13 --with pytest python -m pytest -q
+      - name: Build
+        run: uv build
+      - name: Release notes
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v heading="## [$version]" 'index($0, heading) == 1 {found = 1; next}
+              found && (/^## \[/ || /^\[[^]]+\]: /) {exit}
+              found {print}' CHANGELOG.md > notes.md
+          test -s notes.md
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "OmenSuperHub for Linux $GITHUB_REF_NAME" --notes-file notes.md

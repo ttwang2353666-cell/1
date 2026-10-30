@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
+[Desktop Entry]
+Type=Application
+Name=OmenSuperHub
+GenericName=Omen Control Center
+GenericName[zh_CN]=暗影精灵控制台
+GenericName[zh_TW]=暗影精靈控制台
+Comment=Fan, power and lighting control for HP OMEN / Victus laptops
+Comment[zh_CN]=惠普暗影精灵 / 光影精灵笔记本的风扇、功率与灯光控制
+Comment[zh_TW]=惠普暗影精靈 / 光影精靈筆電的風扇、功率與燈光控制
+Exec=omenhub-gui --panel
+Icon=omenhub
+Terminal=false
+Categories=System;Settings;HardwareSettings;
+Keywords=omen;hp;victus;fan;power;rgb;
+StartupNotify=false

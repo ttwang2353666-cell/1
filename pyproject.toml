@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omensuperhub-linux"
+version = "1.0.0"
+description = "OmenSuperHub for Linux: fan, power and lighting control for HP OMEN / Victus laptops"
+readme = "README.md"
+license = "GPL-3.0-only"
+license-files = ["LICENSE", "LICENSES/*.txt"]
+requires-python = ">=3.8"
+authors = [{ name = "OmenSuperHub for Linux contributors" }]
+maintainers = [{ name = "ttwang2353666-cell" }]
+keywords = ["hp", "omen", "victus", "fan control", "undervolt", "laptop"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: Chinese (Traditional)",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Hardware",
+]
+
+[project.urls]
+Homepage = "https://github.com/ttwang2353666-cell/1"
+Issues = "https://github.com/ttwang2353666-cell/1/issues"
+Changelog = "https://github.com/ttwang2353666-cell/1/blob/main/CHANGELOG.md"
+Upstream = "https://github.com/breadeding/OmenSuperHub"
+
+[project.optional-dependencies]
+gui = ["PyQt6"]
+test = ["pytest"]
+
+[project.scripts]
+omenhubd = "omenhub.daemon:main"
+omenhub = "omenhub.cli:main"
+
+[project.gui-scripts]
+omenhub-gui = "omenhub.gui:main"
+
+[tool.setuptools]
+packages = ["omenhub", "omenhub.gui"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
+# SPDX-License-Identifier: GPL-3.0-only
+
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+venv/
