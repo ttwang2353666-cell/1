@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: 2026 OmenSuperHub for Linux contributors
 # SPDX-License-Identifier: GPL-3.0-only
 
-# 推送 v* 标签时：检查版本号、运行测试、构建源码包与 wheel，用 CHANGELOG.md 中对应版本的内容创建 Release
+# 发布新版本：推送 v* 标签，或在 Actions 页面手动运行本工作流（按 pyproject.toml 中的版本号在当前提交上创建标签）。
+# 两种方式都会检查版本号、运行测试、构建源码包与 wheel，并用 CHANGELOG.md 中对应版本的内容创建 Release。
 name: Release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,23 +20,37 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - name: Check version
+        id: version
         run: |
-          version="${GITHUB_REF_NAME#v}"
-          grep -qx "version = \"$version\"" pyproject.toml
+          version="$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml)"
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match version $version in pyproject.toml"
+            exit 1
+          fi
           grep -qx "__version__ = \"$version\"" omenhub/__init__.py
           grep -q "^## \[$version\]" CHANGELOG.md
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Test
         run: uv run --no-project --python 3.13 --with pytest python -m pytest -q
       - name: Build
         run: uv build
       - name: Release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          version="${GITHUB_REF_NAME#v}"
-          awk -v heading="## [$version]" 'index($0, heading) == 1 {found = 1; next}
+          awk -v heading="## [$VERSION]" 'index($0, heading) == 1 {found = 1; next}
               found && (/^## \[/ || /^\[[^]]+\]: /) {exit}
               found {print}' CHANGELOG.md > notes.md
           test -s notes.md
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --title "OmenSuperHub for Linux $GITHUB_REF_NAME" --notes-file notes.md
+          TAG: v${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "::error::release $TAG already exists"
+            exit 1
+          fi
+          # 标签不存在时由 GitHub 在 --target 指定的提交上创建
+          gh release create "$TAG" dist/* --target "$GITHUB_SHA" --title "OmenSuperHub for Linux $TAG" \
+            --notes-file notes.md

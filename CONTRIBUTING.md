@@ -50,6 +50,14 @@ reuse lint
 - BIOS 命令以原版 OmenSuperHub 的行为为准；任何写入硬件的改动都要在 `MockBios` / `FakeMsrDevice` 上补充测试。
 - 不要在没有用户操作的情况下写入新的硬件设置；涉及电压、功率的功能要有范围限制和恢复手段。
 
+## 发布新版本 / Releasing
+
+1. 修改 `pyproject.toml` 与 `omenhub/__init__.py` 中的版本号，并在 `CHANGELOG.md` 中加入对应版本的说明；
+2. 合并到 main 后，在 GitHub 的 Actions 页面手动运行 “Release” 工作流（或推送 `v版本号` 标签）。工作流会检查版本号、运行测试、构建源码包与 wheel，并创建标签和 Release。
+
+Bump the version in `pyproject.toml` and `omenhub/__init__.py`, add a `CHANGELOG.md` entry, merge to main, then run the
+“Release” workflow from the Actions tab (or push a `v<version>` tag).
+
 ## 许可证 / License
 
 本项目以 GPL-3.0-only 发布，提交的代码同样以该许可证授权。新文件请加上 SPDX 文件头（参考现有文件），并保证 `reuse lint` 通过；移植自原版的代码需要保留原作者的版权行。
