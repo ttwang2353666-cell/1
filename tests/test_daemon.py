@@ -197,6 +197,9 @@ def test_thermal_mode_and_lighting_commands(tmp_path):
 
 
 def test_ipc_roundtrip_and_authorization(tmp_path, monkeypatch):
+    # 不依赖运行测试的用户是否为 root 或属于 omenhub / sudo 等组（CI 中是普通用户）
+    monkeypatch.setattr(daemon_mod, "is_authorized", lambda uid, groups: True)
+
     async def body(d):
         server = await d.start_server()
         loop = asyncio.get_running_loop()
